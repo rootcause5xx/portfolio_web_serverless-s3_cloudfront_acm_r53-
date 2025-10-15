@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aman | Creative Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1C1C1C;
+            --text-light: #F4F4F4;
+            --text-muted: #D4C5B0;
+            --accent-gold: #BFA181;
+        }
+
+        @keyframes moveBackground {
+            from { transform: translate(0, 0); }
+            to { transform: translate(10%, 10%); }
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.05), transparent 40%);
+            animation: moveBackground 20s infinite alternate;
+            z-index: -10;
+        }
+
+        .glass-card {
+            background-color: rgba(41, 41, 41, 0.4);
+            border: 1px solid rgba(68, 68, 68, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-[#1C1C1C] text-[#D4C5B0] font-[Inter] animated-bg">
+    <div id="root"></div>
+
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+        const { render } = ReactDOM;
+
+        const ScrollRevealBox = ({ children, className }) => {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    },
+                    { threshold: 0.2 }
+                );
+
+                if (ref.current) {
+                    observer.observe(ref.current);
+                }
+                return () => {
+                    if (ref.current) observer.unobserve(ref.current);
+                };
+            }, []);
+
+            return (
+                <div
+                    ref={ref}
+                    className={`scroll-reveal ${isVisible ? 'is-visible' : ''} ${className}`}
+                >
+                    {children}
+                </div>
+            );
+        };
+
+        const Header = () => (
+            <header className="sticky top-0 z-50 bg-neutral-900 bg-opacity-80 backdrop-blur-sm p-4">
+                <nav className="container mx-auto flex justify-between items-center py-2">
+                    <a href="#" className="text-xl font-bold font-[Playfair Display] text-[#BFA181]">
+                        Aman
+                    </a>
+                    <div className="flex gap-6">
+                        <a href="#work" className="text-sm font-semibold text-white hover:text-[#BFA181] transition-colors duration-300">Work</a>
+                        <a href="#about" className="text-sm font-semibold text-white hover:text-[#BFA181] transition-colors duration-300">About</a>
+                        <a href="#contact" className="text-sm font-semibold text-white hover:text-[#BFA181] transition-colors duration-300">Contact</a>
+                    </div>
+                </nav>
+            </header>
+        );
+
+        const Hero = () => (
+            <div className="text-center py-24">
+                <ScrollRevealBox>
+                    <h1 className="text-4xl md:text-6xl font-bold font-[Playfair Display] text-white leading-tight mb-4">
+                        Crafting Digital Experiences, <br />Not Just Designs.
+                    </h1>
+                </ScrollRevealBox>
+                <ScrollRevealBox>
+                    <p className="text-lg md:text-xl text-[#D4C5B0] max-w-2xl mx-auto">
+                        A product designer and developer who builds elegant, user-centric solutions.
+                    </p>
+                </ScrollRevealBox>
+            </div>
+        );
+
+        const ProjectCard = ({ title, description, image, role, results }) => (
+            <div className="glass-card rounded-2xl p-8 shadow-xl transition-all duration-400 hover:translate-y-[-8px] hover:shadow-2xl">
+                <img src={image} alt={title} className="w-full h-auto rounded-xl mb-6 object-cover" />
+                <h3 className="text-2xl font-bold font-[Playfair Display] text-white mb-2">{title}</h3>
+                <p className="text-sm text-[#D4C5B0] mb-4">{role}</p>
+                <p className="text-base text-gray-300">{description}</p>
+                <div className="flex items-center mt-4 text-[#BFA181]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-5 h-5 mr-2" viewBox="0 0 16 16">
+                        <path d="M12 1a1 1 0 0 1 1 1v4.619a1 1 0 0 1-.397.781L8.52 11.23a.5.5 0 0 0 .17.766L10.957 14H1.043l2.268-2.004a.5.5 0 0 0 .17-.766L.603 6.4a1 1 0 0 1-.397-.781V2a1 1 0 0 1 1-1h10zM1 0a2 2 0 0 0-2 2v4.619a2 2 0 0 0 .8 1.562L5.48 12.77a1.5 1.5 0 0 0 .51 2.298L4.043 16h8.914l-1.947-1.428a1.5 1.5 0 0 0 .51-2.298l4.68-4.68A2 2 0 0 0 14 6.619V2a2 2 0 0 0-2-2H1z"/>
+                    </svg>
+                    <span className="text-sm">{results}</span>
+                </div>
+            </div>
+        );
+
+        const Work = () => (
+            <section id="work" className="container mx-auto py-16">
+                <ScrollRevealBox>
+                    <h2 className="text-3xl md:text-4xl font-bold font-[Playfair Display] text-center text-white mb-12">Featured Work</h2>
+                </ScrollRevealBox>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+                    <ScrollRevealBox className="md:col-span-2">
+                        <ProjectCard
+                            title="Productivity App Redesign"
+                            description="The existing app suffered from a cluttered interface. I redesigned it to be minimalist with a clear visual hierarchy, focusing on a user-first approach."
+                            image="https://placehold.co/1200x800/292929/BFA181?text=App+Redesign"
+                            role="UI/UX Design, Front-End Development | Lead Designer"
+                            results="45% increase in user retention."
+                        />
+                    </ScrollRevealBox>
+                    <ScrollRevealBox>
+                        <ProjectCard
+                            title="E-commerce Platform"
+                            description="I built a custom, lightning-fast front-end for an e-commerce platform that was optimized for conversion and a seamless mobile-first experience."
+                            image="https://placehold.co/600x600/292929/BFA181?text=E-commerce+Platform"
+                            role="Web Development, UI/UX Design | Lead Developer"
+                            results="60% increase in mobile conversions."
+                        />
+                    </ScrollRevealBox>
+                    <ScrollRevealBox>
+                        <ProjectCard
+                            title="Data Visualization Dashboard"
+                            description="Created an interactive data visualization dashboard for a complex data set, making it accessible and intuitive for non-technical users."
+                            image="https://placehold.co/600x600/292929/BFA181?text=Data+Dashboard"
+                            role="UI/UX Design, Front-End Development | Data Designer"
+                            results="25% reduction in report generation time."
+                        />
+                    </ScrollRevealBox>
+                    <ScrollRevealBox>
+                        <ProjectCard
+                            title="Mobile App Concept"
+                            description="A complete visual and interactive design for a new mobile application concept, from wireframes to high-fidelity mockups."
+                            image="https://placehold.co/600x600/292929/BFA181?text=Mobile+App"
+                            role="UI/UX Design | Product Designer"
+                            results="High-fidelity prototype."
+                        />
+                    </ScrollRevealBox>
+                </div>
+            </section>
+        );
+
+        const About = () => (
+            <section id="about" className="container mx-auto py-16 text-center">
+                <ScrollRevealBox>
+                    <h2 className="text-3xl md:text-4xl font-bold font-[Playfair Display] text-center text-white mb-8">About Me</h2>
+                </ScrollRevealBox>
+                <ScrollRevealBox>
+                    <div className="glass-card rounded-2xl p-12 max-w-4xl mx-auto shadow-xl">
+                        <p className="text-base md:text-lg text-gray-300">
+                             creative problem-solver with a passion for building elegant and functional digital products.
+                        </p>
+                    </div>
+                </ScrollRevealBox>
+            </section>
+        );
+
+        const Contact = () => (
+            <section id="contact" className="container mx-auto py-16 text-center">
+                <ScrollRevealBox>
+                    <h2 className="text-3xl md:text-4xl font-bold font-[Playfair Display] text-center text-white mb-8">Let's Connect</h2>
+                </ScrollRevealBox>
+                <ScrollRevealBox>
+                    <div className="glass-card rounded-2xl p-12 max-w-2xl mx-auto shadow-xl">
+                        {/* The form is updated with Formspree attributes */}
+                        <form action="https://formspree.io/f/xnqkyrjn" method="POST" className="space-y-6">
+                            <input type="text" name="name" placeholder="Your Name" className="w-full p-4 rounded-full bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#BFA181] text-white transition-colors duration-300" />
+                            <input type="email" name="email" placeholder="Your Email" className="w-full p-4 rounded-full bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#BFA181] text-white transition-colors duration-300" />
+                            <textarea name="message" placeholder="Your Message" rows="5" className="w-full p-4 rounded-3xl bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#BFA181] text-white transition-colors duration-300"></textarea>
+                            <button type="submit" className="bg-[#BFA181] text-[#1C1C1C] font-semibold py-3 px-8 rounded-full shadow-lg transition-transform duration-300 hover:scale-105">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </ScrollRevealBox>
+            </section>
+        );
+
+        const Footer = () => (
+            <footer className="text-center py-8 border-t border-neutral-700 mt-12">
+                <p>&copy; 2024 Appleslabs. All rights reserved.</p>
+            </footer>
+        );
+
+        function App() {
+            return (
+                <main>
+                    <Header />
+                    <Hero />
+                    <Work />
+                    <About />
+                    <Contact />
+                    <Footer />
+                </main>
+            );
+        }
+
+        const root = document.getElementById('root');
+        ReactDOM.render(<App />, root);
+    </script>
+</body>
+</html>
